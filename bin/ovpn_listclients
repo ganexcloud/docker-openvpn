@@ -18,8 +18,7 @@ if [ -e crl.pem ]; then
 else
     cat ca.crt > cacheck.pem
 fi
-
-echo "name,begin,end,status"
+echo "Name,Begin,End,Status" >> client-list.txt
 for name in issued/*.crt; do
     path=$name
     begin=$(openssl x509 -noout -startdate -in $path | awk -F= '{ print $2 }')
@@ -46,9 +45,11 @@ for name in issued/*.crt; do
                     status="INVALID"
             esac
         fi
-        echo "$name,$begin,$end,$status"
+        echo "$name,$begin,$end,$status" >> client-list.txt
     fi
 done
+cat client-list.txt  | column -t -s ","
 
 # Clean
 rm cacheck.pem
+rm client-list.txt 
