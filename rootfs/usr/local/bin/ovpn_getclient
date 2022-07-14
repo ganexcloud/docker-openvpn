@@ -45,9 +45,9 @@ verb 3
 mute 20
 
 #Linux Only
-script-security 2
-up "/etc/openvpn/update-resolv-conf"
-down "/etc/openvpn/update-resolv-conf"
+#script-security 2
+#up "/etc/openvpn/update-resolv-conf"
+#down "/etc/openvpn/update-resolv-conf"
 
 remote $OVPN_CN $OVPN_PORT $OVPN_PROTO"
     if [ "$OVPN_PROTO" == "udp6" ]; then
