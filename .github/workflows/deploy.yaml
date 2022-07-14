@@ -9,20 +9,20 @@ env:
   DOCKER_IMAGE_REPOSITORY: ganex/openvpn
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repo
-        id: checkout
-        uses: actions/checkout@v3
-      - name: Run
-        id: run
-        run: |
-          docker build -t "${{ env.DOCKER_IMAGE_REPOSITORY }}:test" .
-          git clone https://github.com/docker-library/official-images.git official-images
-          official-images/test/run.sh "${{ env.DOCKER_IMAGE_REPOSITORY }}:test"
-          test/run.sh "${{ env.DOCKER_IMAGE_REPOSITORY }}:test"
+  #test:
+  #  name: Test
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Check out the repo
+  #      id: checkout
+  #      uses: actions/checkout@v3
+  #    - name: Run
+  #      id: run
+  #      run: |
+  #        docker build -t "${{ env.DOCKER_IMAGE_REPOSITORY }}:test" .
+  #        git clone https://github.com/docker-library/official-images.git official-images
+  #        official-images/test/run.sh "${{ env.DOCKER_IMAGE_REPOSITORY }}:test"
+  #        test/run.sh "${{ env.DOCKER_IMAGE_REPOSITORY }}:test"
 
   deploy:
     name: Push Docker image to Docker Hub
