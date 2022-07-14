@@ -93,4 +93,4 @@ remove-client:
 .PHONY: list-clients
 list-clients:
 	@cd ${OPENVPN_ROOTDIR} ; \
-	docker-compose run --rm ovpn_listclients
+	docker-compose run --rm openvpn ovpn_listclients
