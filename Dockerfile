@@ -23,8 +23,8 @@ EXPOSE 1194/udp
 
 CMD ["ovpn_run"]
 
-ADD ./bin /usr/local/bin
+ADD rootfs/usr/ /usr/
 RUN chmod a+x /usr/local/bin/*
 
 # Add support for OTP authentication using a PAM module
-ADD ./otp/openvpn /etc/pam.d/
+ADD rootfs/etc/ /etc/
