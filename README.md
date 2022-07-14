@@ -46,14 +46,6 @@ OpenVPN server in a Docker container complete with an EasyRSA PKI CA.
 Miscellaneous write-ups for advanced configurations are available in the
 [docs](docs) folder.
 
-### Systemd Init Scripts
-
-A `systemd` init script is available to manage the OpenVPN container.  It will
-start the container on system boot, restart the container if it exits
-unexpectedly, and pull updates from Docker Hub to keep itself up to date.
-
-Please refer to the [systemd documentation](docs/systemd.md) to learn more.
-
 ### Docker Compose
 
 If you prefer to use `docker-compose` please refer to the [documentation](docs/docker-compose.md).
