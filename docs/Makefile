@@ -19,13 +19,13 @@ README := "https://ganexcloud.atlassian.net/wiki/spaces/GAN/pages/57278465/OpenV
 .PHONY: help
 help:
 	@echo Use:
-	@echo '  start: To start a OpenVPN server.'
-	@echo '  stop: To stop a OpenVPN server.'
-	@echo '  init-config: Generate a initial OpenVPN config.'
-	@echo '  add-client USERNAME=NAME: Generate a client certificate.'
-	@echo '  revoke-client USERNAME=NAME: Revoke keys but maitain files.'
-	@echo '  remove-client USERNAME=NAME: List clients.'
-	@echo '  list-clients: Generate a client certificate.'
+	@echo '  start: To start a OpenVPN server'
+	@echo '  stop: To stop a OpenVPN server'
+	@echo '  init-config: Generate a initial config'
+	@echo '  add-client USERNAME=NAME: Add a new client'
+	@echo '  revoke-client USERNAME=NAME: Revoke keys but maintain files'
+	@echo '  remove-client USERNAME=NAME: Revoke and remove client keys'
+	@echo '  list-clients: List clients'
 	@echo ''
 
 # Install Docker and docker-compose
