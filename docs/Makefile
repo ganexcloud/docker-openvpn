@@ -67,7 +67,7 @@ add-client:
 	docker-compose run --rm openvpn ovpn_getclient $${USERNAME} > download-configs/$${USERNAME}.ovpn; \
 	echo ${README} > /tmp/README.md; \
 	zip -jr download-configs/$${USERNAME}.zip download-configs/$${USERNAME}.ovpn /tmp/README.md; \
-	 -n "Send zip file with credentials to email? [y/N] " && read SEND_EMAIL; \
+	echo  -n "Send zip file with credentials to email? [y/N] " && read SEND_EMAIL; \
 	if [[ $$SEND_EMAIL =~ ^[Yy]$$ ]]; then \
 		read -p "Email address: " EMAIL; \
 		if [[ -f "send-email.py" ]]; then wget -q https://raw.githubusercontent.com/ganexcloud/docker-openvpn/master/tools/send-email.py; fi; \
