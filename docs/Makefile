@@ -1,31 +1,24 @@
-# Variables
-SHELL:=/bin/bash
-OPENVPN_ADDRESS := "XX"
-OPENVPN_SERVER_SUBNET := "172.16.255.0/24"
-OPENVPN_ROUTE := "172.16.254.0/24"
-OPENVPN_PUSH := "route 10.0.0.0 255.255.0.0"
-OPENVPN_DNSSERVER := "10.0.0.2"
-OPENVPN_ROOTDIR := "/etc/openvpn/"
-KEY_EXPIRE := "3650"
-KEY_COUNTRY := "XX"
-KEY_PROVINCE := "XX"
-KEY_CITY := "XX"
-KEY_ORG := "XX"
-KEY_EMAIL := "XX"
-KEY_OU := "XX"
-README := "https://ganexcloud.atlassian.net/wiki/spaces/GAN/pages/57278465/OpenVPN+-+Configurar+cliente+VPN"
+# This makefile help users to use and maintain OpenVPN server configs.
+# All variables are defined on .env file, see .env.example to display options.
 
 # Script
+SHELL:=/bin/bash
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 .PHONY: help
 help:
 	@echo Use:
 	@echo '  start: To start a OpenVPN server'
 	@echo '  stop: To stop a OpenVPN server'
 	@echo '  init-config: Generate a initial config'
-	@echo '  add-client USERNAME=NAME: Add a new client'
-	@echo '  revoke-client USERNAME=NAME: Revoke keys but maintain files'
-	@echo '  remove-client USERNAME=NAME: Revoke and remove client keys'
+	@echo '  add-client: Add a new client'
+	@echo '  revoke-client: Revoke keys but maintain files'
+	@echo '  remove-client: Revoke and remove client keys'
 	@echo '  list-clients: List clients'
+	@echo '  send-credential: Send credential zip file to email address'
 	@echo ''
 
 # Install Docker and docker-compose
@@ -67,30 +60,60 @@ stop:
 # Create client configs
 .PHONY: add-client
 add-client:
-	@cd ${OPENVPN_ROOTDIR} ; \
+	@read -p "Username: " USERNAME; \
+	cd ${OPENVPN_ROOTDIR}; \
 	mkdir -p download-configs; \
-	docker-compose run --rm openvpn easyrsa build-client-full ${USERNAME} nopass; \
-	docker-compose run --rm openvpn ovpn_getclient ${USERNAME} > download-configs/${USERNAME}.ovpn; \
+	docker-compose run --rm openvpn easyrsa build-client-full $${USERNAME} nopass; \
+	docker-compose run --rm openvpn ovpn_getclient $${USERNAME} > download-configs/$${USERNAME}.ovpn; \
 	echo ${README} > /tmp/README.md; \
-	zip -jr download-configs/${USERNAME}.zip download-configs/${USERNAME}.ovpn /tmp/README.md
-	@echo "Credentials created with success, the zip file with credentials are on /etc/openvpn/download-configs/${USERNAME}.zip"
+	zip -jr download-configs/$${USERNAME}.zip download-configs/$${USERNAME}.ovpn /tmp/README.md; \
+	 -n "Send zip file with credentials to email? [y/N] " && read SEND_EMAIL; \
+	if [[ $$SEND_EMAIL =~ ^[Yy]$$ ]]; then \
+		read -p "Email address: " EMAIL; \
+		if [[ -f "send-email.py" ]]; then wget -q XXX; fi; \
+		python3 send-email.py $${SMTP_HOST} $${SMTP_PORT} $${SMTP_USER} $${SMTP_PASSWORD} $${SMTP_TLS_ENABLED} $${USERNAME} $${EMAIL_FROM} $${EMAIL} 2> /dev/null; \
+		if [[ $$? -eq 0 ]]; then \
+			echo "Email was sent successfully!" ;\
+		else \
+			echo "There was a problem sending the email, check your smtp settings." ;\
+			exit 1 ;\
+		fi ;\
+	else \
+		echo "Credentials created with success, the zip file with credentials are on ${OPENVPN_ROOTDIR}/download-configs/$${USERNAME}.zip" ;\
+	fi ;\
 
 # Revoke client
 .PHONY: revoke-client
 revoke-client:
-	@cd ${OPENVPN_ROOTDIR}; \
-	docker-compose run --rm openvpn ovpn_revokeclient ${USERNAME}
-	@echo "Client ${USERNAME} revoked with success!"
+	@read -p "Username: " USERNAME; \
+	cd ${OPENVPN_ROOTDIR} ; \
+	docker-compose run --rm openvpn ovpn_revokeclient $${USERNAME}; \
+	echo "Client $${USERNAME} revoked with success!"
 
 # Remove client
 .PHONY: remove-client
 remove-client:
-	@cd ${OPENVPN_ROOTDIR} ; \
-	docker-compose run --rm openvpn ovpn_revokeclient ${USERNAME} remove
-	@echo "Client ${USERNAME} removed with success!"
+	@read -p "Username: " USERNAME; \
+	cd ${OPENVPN_ROOTDIR} ; \
+	docker-compose run --rm openvpn ovpn_revokeclient $${USERNAME} remove; \
+	echo "Client $${USERNAME} removed with success!"
 
 # List clients
 .PHONY: list-clients
 list-clients:
 	@cd ${OPENVPN_ROOTDIR} ; \
 	docker-compose run --rm openvpn ovpn_listclients
+
+# Send credentials
+.PHONY: send-credential
+send-credential:
+	@read -p "Username: " USERNAME; \
+	read -p "Email address: " EMAIL; \
+	if [[ -f "send-email.py" ]]; then wget -q XXX; fi; \
+	python3 send-email.py $${SMTP_HOST} $${SMTP_PORT} $${SMTP_USER} $${SMTP_PASSWORD} $${SMTP_TLS_ENABLED} $${USERNAME} $${EMAIL_FROM} $${EMAIL}; \
+	if [[ $$? -eq 0 ]]; then \
+		echo "Email was sent successfully!" ;\
+	else \
+		echo "There was a problem sending the email, check your smtp settings." ;\
+		exit 1 ;\
+	fi ;\
