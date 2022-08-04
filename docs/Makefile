@@ -38,7 +38,7 @@ init-config:
 	@mkdir -p ${OPENVPN_ROOTDIR}; \
 	cd ${OPENVPN_ROOTDIR}; \
 	if [[ -d "openvpn-data/" ]]; then echo "Directory openvpn-data already exists, impossible to continue."; exit 1; fi
-	wget -q https://raw.githubusercontent.com/ganexcloud/docker-openvpn/master/scripts/docker-compose.yml; \
+	wget -q https://raw.githubusercontent.com/ganexcloud/docker-openvpn/master/docs/docker-compose.yml; \
 	docker-compose run --rm openvpn ovpn_genconfig -u udp://${OPENVPN_ADDRESS} -s ${OPENVPN_SERVER_SUBNET} -r ${OPENVPN_ROUTE} -p ${OPENVPN_PUSH} -n ${OPENVPN_DNSSERVER}; \
 	docker-compose run --rm -e EASYRSA_BATCH=1 -e EASYRSA_REQ_CN=${OPENVPN_ADDRESS} -e EASYRSA_CA_EXPIRE="${KEY_EXPIRE}" -e EASYRSA_CERT_EXPIRE="${KEY_EXPIRE}" -e EASYRSA_REQ_COUNTRY="${KEY_COUNTRY}" -e KEY_PROVINCE="${EASYRSA_REQ_PROVINCE}" -e EASYRSA_REQ_CITY="${KEY_CITY}" -e EASYRSA_REQ_ORG="${KEY_ORG}" -e EASYRSA_REQ_EMAIL="${KEY_EMAIL}" -e EASYRSA_REQ_OU="${KEY_OU}" openvpn ovpn_initpki nopass
 	@echo "OpenVPN configurations created with sucess!"
