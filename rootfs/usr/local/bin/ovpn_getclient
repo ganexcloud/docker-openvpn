@@ -40,7 +40,6 @@ remote-cert-tls server
 persist-key
 persist-tun
 mute-replay-warnings
-ns-cert-type server
 verb 3
 mute 20
 
