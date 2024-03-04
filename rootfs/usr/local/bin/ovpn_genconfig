@@ -333,10 +333,6 @@ proto $OVPN_PROTO
 sndbuf 512000
 rcvbuf 512000
 txqueuelen 2000
-mssfix 0
-fragment 0
-tun-mtu 9000
-tcp-nodelay
 
 # Rely on Docker to do port mapping, internally always 1194
 port 1194
