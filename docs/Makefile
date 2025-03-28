@@ -63,7 +63,7 @@ add-client:
 	@read -p "Username: " USERNAME; \
 	cd ${OPENVPN_ROOTDIR}; \
 	mkdir -p download-configs; \
-	docker-compose run --rm openvpn easyrsa build-client-full $${USERNAME} nopass; \
+	docker-compose run --rm openvpn bash -c "export EASYRSA_CERT_EXPIRE=3650 && easyrsa build-client-full $${USERNAME} nopass"; \
 	docker-compose run --rm openvpn ovpn_getclient $${USERNAME} > download-configs/$${USERNAME}.ovpn; \
 	echo ${README} > /tmp/README.md; \
 	zip -jqr download-configs/$${USERNAME}.zip download-configs/$${USERNAME}.ovpn /tmp/README.md; \
