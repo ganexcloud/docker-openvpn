@@ -1,27 +1,30 @@
-# syntax=docker/dockerfile:1.7
-ARG ALPINE_VERSION=3.24.1
+# Original credit: https://github.com/jpetazzo/dockvpn
 
-FROM alpine:${ALPINE_VERSION}
-ARG OPENVPN_VERSION=2.7.5-r0
-ARG EASYRSA_VERSION=3.2.5-r0
+# Smallest base image
+FROM alpine:3.12
+LABEL maintainer="Ganex <suporte@ganex.com>"
 
-RUN apk add --no-cache \
-      bash \
-      "easy-rsa=${EASYRSA_VERSION}" \
-      "openvpn=${OPENVPN_VERSION}" \
-      openssl \
-    && ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin/easyrsa \
-    && openvpn --version | grep -q '\[DCO\]'
+# Testing: pamtester
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories && \
+    apk add --update openvpn iptables bash easy-rsa openvpn-auth-pam google-authenticator pamtester libqrencode util-linux && \
+    ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
+    rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
-ENV OPENVPN=/etc/openvpn \
-    EASYRSA=/usr/share/easy-rsa \
-    EASYRSA_PKI=/etc/openvpn/pki
-
-COPY config/openvpn.conf.template /opt/openvpn/openvpn.conf.template
-COPY docker/ovpn.sh /usr/local/bin/ovpn
-RUN chmod 0755 /usr/local/bin/ovpn
+# Needed by scripts
+ENV OPENVPN=/etc/openvpn
+ENV EASYRSA=/usr/share/easy-rsa \
+    EASYRSA_CRL_DAYS=3650 \
+    EASYRSA_PKI=$OPENVPN/pki
 
 VOLUME ["/etc/openvpn"]
+
+# Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
-ENTRYPOINT ["ovpn"]
-CMD ["run"]
+
+CMD ["ovpn_run"]
+
+ADD rootfs/usr/ /usr/
+RUN chmod a+x /usr/local/bin/*
+
+# Add support for OTP authentication using a PAM module
+ADD rootfs/etc/ /etc/
