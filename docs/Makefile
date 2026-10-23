@@ -63,8 +63,8 @@ add-client:
 	@read -p "Username: " USERNAME; \
 	cd ${OPENVPN_ROOTDIR}; \
 	mkdir -p download-configs; \
-	docker-compose run --rm openvpn bash -c "export EASYRSA_CERT_EXPIRE=3650 && easyrsa build-client-full $${USERNAME} nopass"; \
-	docker-compose run --rm openvpn ovpn_getclient $${USERNAME} > download-configs/$${USERNAME}.ovpn; \
+	docker-compose exec -T openvpn bash -c "export EASYRSA_CERT_EXPIRE=3650 && easyrsa build-client-full $${USERNAME} nopass"; \
+	docker-compose exec -T openvpn ovpn_getclient $${USERNAME} > download-configs/$${USERNAME}.ovpn; \
 	echo ${README} > /tmp/README.md; \
 	zip -jqr download-configs/$${USERNAME}.zip download-configs/$${USERNAME}.ovpn /tmp/README.md; \
 	echo  -n "Send zip file with credentials to email? [y/N] " && read SEND_EMAIL; \
@@ -87,7 +87,7 @@ add-client:
 revoke-client:
 	@read -p "Username: " USERNAME; \
 	cd ${OPENVPN_ROOTDIR} ; \
-	docker-compose run --rm openvpn ovpn_revokeclient $${USERNAME}; \
+	docker-compose exec -T openvpn ovpn_revokeclient $${USERNAME}; \
 	echo "Client $${USERNAME} revoked with success!"
 
 # Remove client
@@ -95,14 +95,14 @@ revoke-client:
 remove-client:
 	@read -p "Username: " USERNAME; \
 	cd ${OPENVPN_ROOTDIR} ; \
-	docker-compose run --rm openvpn ovpn_revokeclient $${USERNAME} remove; \
+	docker-compose exec -T openvpn ovpn_revokeclient $${USERNAME} remove; \
 	echo "Client $${USERNAME} removed with success!"
 
 # List clients
 .PHONY: list-clients
 list-clients:
 	@cd ${OPENVPN_ROOTDIR} ; \
-	docker-compose run --rm openvpn ovpn_listclients
+	docker-compose exec -T openvpn ovpn_listclients
 
 # Send credentials
 .PHONY: send-credential
